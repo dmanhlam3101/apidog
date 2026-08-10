@@ -1,0 +1,1060 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Admin API",
+    "description": "For management scenarios: batch processing of adding and deleting pets, as well as retrieving audit logs.",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Dashboard"
+    },
+    {
+      "name": "User Management"
+    },
+    {
+      "name": "Order Management"
+    },
+    {
+      "name": "Audit Logs"
+    }
+  ],
+  "paths": {
+    "/stats": {
+      "get": {
+        "summary": "Get Dashboard Stats",
+        "deprecated": false,
+        "description": "Retrieve high-level statistics about the pet store performance.",
+        "operationId": "getDashboardStats",
+        "tags": [
+          "Dashboard"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Dashboard statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalPets": {
+                      "type": "integer",
+                      "description": "Total number of pets in the system",
+                      "example": 150
+                    },
+                    "availablePets": {
+                      "type": "integer",
+                      "description": "Number of pets available for adoption",
+                      "example": 45
+                    },
+                    "totalUsers": {
+                      "type": "integer",
+                      "description": "Total registered users",
+                      "example": 1200
+                    },
+                    "totalOrders": {
+                      "type": "integer",
+                      "description": "Total orders placed",
+                      "example": 350
+                    },
+                    "revenue": {
+                      "type": "number",
+                      "format": "double",
+                      "description": "Total revenue generated",
+                      "example": 25000.5
+                    },
+                    "recentActivity": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of recent system events"
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearerAuth1": []
+          }
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "List Users",
+        "deprecated": false,
+        "description": "Retrieve a paginated list of all users in the system.",
+        "operationId": "listUsers",
+        "tags": [
+          "User Management"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Items per page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search by username or email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "totalItems": {
+                          "type": "integer"
+                        },
+                        "totalPages": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "username": "johndoe",
+                      "email": "john.doe@petstore.com",
+                      "firstName": "John",
+                      "lastName": "Smith",
+                      "phone": "+12025551234",
+                      "preferences": {
+                        "newsletter": false,
+                        "notifications": true
+                      }
+                    }
+                  ],
+                  "pagination": {
+                    "page": -57187690,
+                    "limit": 26839665,
+                    "totalItems": -17845631,
+                    "totalPages": 96864753
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": ""
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized",
+            "description": ""
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden",
+            "description": ""
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth1": []
+          }
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Get User Details",
+        "deprecated": false,
+        "description": "",
+        "operationId": "getUser",
+        "tags": [
+          "User Management"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "ACTIVE",
+                        "SUSPENDED",
+                        "BANNED"
+                      ],
+                      "description": "Account status"
+                    },
+                    "roles": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "USER",
+                          "STAFF",
+                          "ADMIN"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "user": {
+                    "username": "johndoe",
+                    "email": "john.doe@petstore.com",
+                    "firstName": "Jane",
+                    "lastName": "Smith",
+                    "phone": "+12025551234",
+                    "preferences": {
+                      "newsletter": false,
+                      "notifications": true
+                    }
+                  },
+                  "status": "BANNED",
+                  "roles": [
+                    "STAFF"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": ""
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized",
+            "description": ""
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden",
+            "description": ""
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth1": []
+          }
+        ]
+      }
+    },
+    "/users/{id}/status": {
+      "put": {
+        "summary": "Update User Status",
+        "deprecated": false,
+        "description": "Suspend, ban, or reactivate a user account.",
+        "operationId": "updateUserStatus",
+        "tags": [
+          "User Management"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "ACTIVE",
+                      "SUSPENDED",
+                      "BANNED"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "User status updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                },
+                "example": {
+                  "id": "77",
+                  "status": "sint nulla",
+                  "updatedAt": "2025-09-22"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": ""
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized",
+            "description": ""
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden",
+            "description": ""
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth1": []
+          }
+        ]
+      }
+    },
+    "/orders": {
+      "get": {
+        "summary": "List All Orders",
+        "deprecated": false,
+        "description": "Retrieve a global list of orders with administrative filtering.",
+        "operationId": "listAllOrders",
+        "tags": [
+          "Order Management"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PLACED",
+                "APPROVED",
+                "SHIPPED",
+                "DELIVERED",
+                "CANCELLED"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Order"
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "totalItems": {
+                          "type": "integer"
+                        },
+                        "totalPages": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "petId": "019b4132-70aa-764f-b315-e2803d882a24",
+                      "userId": "019b4138-e0af-70b9-8f0c-6ea97d495dfa",
+                      "status": "PLACED",
+                      "totalAmount": "200.99",
+                      "currency": "USD"
+                    },
+                    {
+                      "petId": "019b4132-70aa-764f-b315-e2803d882a24",
+                      "userId": "019b4138-e0af-70b9-8f0c-6ea97d495dfa",
+                      "status": "APPROVED",
+                      "totalAmount": "75.00",
+                      "currency": "GBP"
+                    },
+                    {
+                      "petId": "019b4132-70aa-764f-b315-e2803d882a24",
+                      "userId": "019b4128-6a6b-777c-9ae8-335e962c68d8",
+                      "status": "APPROVED",
+                      "totalAmount": "200.99",
+                      "currency": "USD"
+                    }
+                  ],
+                  "pagination": {
+                    "page": -88491541,
+                    "limit": -17309436,
+                    "totalItems": -27527088,
+                    "totalPages": 28335847
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": ""
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized",
+            "description": ""
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden",
+            "description": ""
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth1": []
+          }
+        ]
+      }
+    },
+    "/orders/{id}/cancel": {
+      "post": {
+        "summary": "Force Cancel Order",
+        "deprecated": false,
+        "description": "Administratively cancel an order regardless of current state (if allowed).",
+        "operationId": "adminCancelOrder",
+        "tags": [
+          "Order Management"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "description": "Reason for cancellation"
+                  }
+                }
+              },
+              "examples": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order cancelled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearerAuth1": []
+          }
+        ]
+      }
+    },
+    "/audit-logs/{id}": {
+      "get": {
+        "summary": "Get Audit Log Details",
+        "deprecated": false,
+        "description": "",
+        "operationId": "getAuditLog",
+        "tags": [
+          "Audit Logs"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit log details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditLog"
+                },
+                "example": {
+                  "id": "81",
+                  "action": "ORDER_CANCELLED",
+                  "userId": "95",
+                  "entityType": "ORDERS",
+                  "entityId": "019b4139-1234-7abc-8def-123456789abc",
+                  "details": {},
+                  "ipAddress": "78.121.136.16",
+                  "userAgent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/7.1)",
+                  "timestamp": "1768298437"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearerAuth1": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuditLog": {
+        "type": "object",
+        "required": [
+          "id",
+          "action",
+          "userId",
+          "timestamp",
+          "ipAddress"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique log identifier"
+          },
+          "action": {
+            "type": "string",
+            "description": "Action performed (e.g. USER_LOGIN, ORDER_CANCELLED)",
+            "example": "ORDER_CANCELLED"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the user who performed the action"
+          },
+          "entityType": {
+            "type": "string",
+            "description": "Type of entity affected",
+            "example": "ORDERS"
+          },
+          "entityId": {
+            "type": "string",
+            "description": "ID of the entity affected",
+            "example": "019b4139-1234-7abc-8def-123456789abc"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional context or change details (JSON)",
+            "properties": {}
+          },
+          "ipAddress": {
+            "type": "string",
+            "format": "ipv4",
+            "description": "IP address of the requester"
+          },
+          "userAgent": {
+            "type": "string",
+            "description": "User agent string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the action occurred"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "description": "User account information",
+        "required": [
+          "id",
+          "username",
+          "email",
+          "firstName",
+          "lastName",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true,
+            "description": "Unique user identifier (UUID v7)",
+            "example": "019b4138-e0af-70b9-8f0c-6ea97d495dfa"
+          },
+          "username": {
+            "type": "string",
+            "description": "Unique username for login",
+            "minLength": 3,
+            "maxLength": 50,
+            "example": "johndoe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email address",
+            "example": "user@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User's first name",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User's last name",
+            "example": "Doe"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[1-9]\\d{1,14}$",
+            "description": "Phone number in E.164 format",
+            "example": "+12025551234"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "Account creation timestamp (RFC 3339)",
+            "example": "2025-12-21T13:56:23Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "Account last update timestamp (RFC 3339)",
+            "example": "2025-12-21T13:56:23Z"
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true,
+            "description": "Optional tenant identifier for data isolation. When present, indicates this user belongs to a specific tenant. Null or omitted means the user is in the shared/public data pool.",
+            "nullable": true,
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "preferences": {
+            "type": "object",
+            "properties": {
+              "newsletter": {
+                "type": "boolean",
+                "description": "Whether to receive newsletter emails"
+              },
+              "notifications": {
+                "type": "boolean",
+                "description": "Whether to receive notification emails"
+              }
+            },
+            "unevaluatedProperties": false
+          }
+        },
+        "unevaluatedProperties": false
+      },
+      "Order": {
+        "type": "object",
+        "description": "Pet store order details",
+        "required": [
+          "id",
+          "petId",
+          "userId",
+          "status",
+          "totalAmount",
+          "currency",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true,
+            "description": "Unique order identifier (UUID v7)",
+            "example": "019b4139-1234-7abc-8def-123456789abc"
+          },
+          "petId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the pet being ordered",
+            "example": "019b4132-70aa-764f-b315-e2803d882a24"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the user placing the order",
+            "example": "019b4138-e0af-70b9-8f0c-6ea97d495dfa"
+          },
+          "status": {
+            "type": "string",
+            "description": "Order status",
+            "enum": [
+              "PLACED",
+              "APPROVED",
+              "SHIPPED",
+              "DELIVERED",
+              "CANCELLED"
+            ],
+            "example": "PLACED"
+          },
+          "totalAmount": {
+            "type": "string",
+            "description": "Total order amount",
+            "example": "125.50"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency code for the order amount (ISO 4217)",
+            "default": "USD",
+            "pattern": "^[A-Z]{3}$",
+            "example": "USD"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "Order creation timestamp (RFC 3339)",
+            "example": "2025-12-21T13:56:23Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "Order last update timestamp (RFC 3339)",
+            "example": "2025-12-21T13:56:23Z"
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true,
+            "description": "Optional tenant identifier for data isolation. When present, indicates this order belongs to a specific tenant. Null or omitted means the order is in the shared/public data pool.",
+            "nullable": true,
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          }
+        },
+        "unevaluatedProperties": false
+      },
+      "Error": {
+        "type": "object",
+        "description": "RFC 9457 Problem Details for HTTP APIs",
+        "required": [
+          "type",
+          "title",
+          "status"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri",
+            "description": "A URI reference that identifies the problem type",
+            "example": "https://petstoreapi.com/errors/not-found"
+          },
+          "title": {
+            "type": "string",
+            "description": "A short, human-readable summary of the problem",
+            "example": "Resource Not Found"
+          },
+          "status": {
+            "type": "integer",
+            "description": "The HTTP status code",
+            "example": 404
+          },
+          "detail": {
+            "type": "string",
+            "description": "A human-readable explanation specific to this occurrence",
+            "example": "The requested pet with ID '123' was not found"
+          },
+          "instance": {
+            "type": "string",
+            "format": "uri",
+            "description": "A URI reference that identifies the specific occurrence",
+            "example": "/v1/pets/123"
+          },
+          "errors": {
+            "type": "array",
+            "description": "Detailed validation errors (for 422 responses)",
+            "items": {
+              "type": "object",
+              "required": [
+                "field",
+                "message"
+              ],
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "description": "The field that failed validation"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Description of the validation error"
+                },
+                "code": {
+                  "type": "string",
+                  "description": "Machine-readable error code"
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          }
+        },
+        "unevaluatedProperties": false
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "invalid-parameter": {
+                "summary": "invalid-parameter",
+                "value": {
+                  "type": "https://petstoreapi.com/errors/bad-request",
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "Invalid value for parameter 'status'. Must be one of: available, pending, sold.",
+                  "instance": "/pets"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "missing-token": {
+                "summary": "missing-token",
+                "value": {
+                  "type": "https://petstoreapi.com/errors/unauthorized",
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication is required to access this resource. Please provide a valid OAuth 2.0 token."
+                }
+              }
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "insufficient-permissions": {
+                "summary": "insufficient-permissions",
+                "value": {
+                  "type": "https://petstoreapi.com/errors/forbidden",
+                  "title": "Forbidden",
+                  "status": 403,
+                  "detail": "You do not have permission to access this resource."
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "pet-not-found": {
+                "summary": "pet-not-found",
+                "value": {
+                  "type": "https://petstoreapi.com/errors/not-found",
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested pet with ID '123' was not found.",
+                  "instance": "/pets/123"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "bearerAuth1": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "servers": [],
+  "security": []
+}
