@@ -2416,6 +2416,16 @@
           }
         ]
       }
+    },
+    "/demo": {
+      "get": {
+        "summary": "New endpoint",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
     }
   },
   "components": {
