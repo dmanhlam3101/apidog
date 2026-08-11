@@ -26,6 +26,91 @@
     }
   ],
   "paths": {
+    "/": {
+      "get": {
+        "summary": "ấdasdasd",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "oauth2": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "GraphQL example",
+        "deprecated": false,
+        "description": "### Key Features\n\n- **Free and public:** No API key or authentication required.\n- **GraphQL Schema:** Explore relationships between countries, continents, and languages easily.\n- **Use cases:** Testing GraphQL clients, learning schema navigation, building demos, etc.\n\n---\n### Usage Instructions  \nIn the \"success\" debug base under this endpoint, you can directly make requests to the GraphQL API.\n- The query field has already been filled out.\n- Click the refresh button next to \"Schema fetched\" to fetch the schema.\n- Click send to directly send the request and receive a response.\n---\n\n### Endpoint\n\n**GraphQL Endpoint:**  \n```\nhttps://countries.trevorblades.com/\n```\n\n---\n\n### Main Schema Objects\n\n- **Country**\n  - Fields: `code`, `name`, `native` (native name), `phone` (country calling code), `continent`, `capital`, `currency`, `languages`, `emoji`, etc.\n  \n- **Continent**\n  - Fields: `code`, `name`, `countries` (list of countries in the continent)\n  \n- **Language**\n  - Fields: `code`, `name`, `native` (native name)\n  \n---\n\n### Example Queries\n\n**Get all countries with their code and name:**\n```graphql\n{\n  countries {\n    code\n    name\n  }\n}\n```\n\n**Get details of a single country:**\n```graphql\n{\n  country(code: \"JP\") {\n    name\n    capital\n    currency\n    languages {\n      name\n    }\n  }\n}\n```\n\n**List all continents and the countries in each:**\n```graphql\n{\n  continents {\n    name\n    countries {\n      name\n      code\n    }\n  }\n}\n```\n\n---\n\n### How to Use\n\n- You can access the API via your own GraphQL client, curl, or visit the [GraphQL Explorer for Countries API](https://countries.trevorblades.com/) in your browser.\n- Supports introspection, so you can see the full schema and documentation directly in the GraphQL Playground.\n\n---\n\n### Common Use-Cases\n\n- **Frontend prototyping:** For dropdowns (countries, continents, etc.)\n- **Demo apps:** Populate select inputs without backend work.\n- **GraphQL learning:** Practice writing queries and navigating relationships with real data.\n",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "The GraphQL query string."
+                  },
+                  "variables": {
+                    "type": "object",
+                    "description": "GraphQL variables for parameterized queries.",
+                    "additionalProperties": true,
+                    "properties": {},
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "query"
+                ]
+              },
+              "examples": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful GraphQL response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "oauth2": []
+          }
+        ]
+      }
+    },
     "/pets": {
       "get": {
         "summary": "List Pets",
@@ -2219,63 +2304,6 @@
         ]
       }
     },
-    "/": {
-      "post": {
-        "summary": "GraphQL example",
-        "deprecated": false,
-        "description": "### Key Features\n\n- **Free and public:** No API key or authentication required.\n- **GraphQL Schema:** Explore relationships between countries, continents, and languages easily.\n- **Use cases:** Testing GraphQL clients, learning schema navigation, building demos, etc.\n\n---\n### Usage Instructions  \nIn the \"success\" debug base under this endpoint, you can directly make requests to the GraphQL API.\n- The query field has already been filled out.\n- Click the refresh button next to \"Schema fetched\" to fetch the schema.\n- Click send to directly send the request and receive a response.\n---\n\n### Endpoint\n\n**GraphQL Endpoint:**  \n```\nhttps://countries.trevorblades.com/\n```\n\n---\n\n### Main Schema Objects\n\n- **Country**\n  - Fields: `code`, `name`, `native` (native name), `phone` (country calling code), `continent`, `capital`, `currency`, `languages`, `emoji`, etc.\n  \n- **Continent**\n  - Fields: `code`, `name`, `countries` (list of countries in the continent)\n  \n- **Language**\n  - Fields: `code`, `name`, `native` (native name)\n  \n---\n\n### Example Queries\n\n**Get all countries with their code and name:**\n```graphql\n{\n  countries {\n    code\n    name\n  }\n}\n```\n\n**Get details of a single country:**\n```graphql\n{\n  country(code: \"JP\") {\n    name\n    capital\n    currency\n    languages {\n      name\n    }\n  }\n}\n```\n\n**List all continents and the countries in each:**\n```graphql\n{\n  continents {\n    name\n    countries {\n      name\n      code\n    }\n  }\n}\n```\n\n---\n\n### How to Use\n\n- You can access the API via your own GraphQL client, curl, or visit the [GraphQL Explorer for Countries API](https://countries.trevorblades.com/) in your browser.\n- Supports introspection, so you can see the full schema and documentation directly in the GraphQL Playground.\n\n---\n\n### Common Use-Cases\n\n- **Frontend prototyping:** For dropdowns (countries, continents, etc.)\n- **Demo apps:** Populate select inputs without backend work.\n- **GraphQL learning:** Practice writing queries and navigating relationships with real data.\n",
-        "tags": [],
-        "parameters": [],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "query": {
-                    "type": "string",
-                    "description": "The GraphQL query string."
-                  },
-                  "variables": {
-                    "type": "object",
-                    "description": "GraphQL variables for parameterized queries.",
-                    "additionalProperties": true,
-                    "properties": {},
-                    "nullable": true
-                  }
-                },
-                "required": [
-                  "query"
-                ]
-              },
-              "examples": {}
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "successful GraphQL response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {}
-                }
-              }
-            },
-            "headers": {}
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          },
-          {
-            "oauth2": []
-          }
-        ]
-      }
-    },
     "/.sse": {
       "post": {
         "summary": "SSE example",
@@ -2415,16 +2443,6 @@
             "oauth2": []
           }
         ]
-      }
-    },
-    "/demo": {
-      "get": {
-        "summary": "New endpoint",
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        }
       }
     }
   },
